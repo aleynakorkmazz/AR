@@ -2,146 +2,119 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Aleyna Korkmaz | Interface v1</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Aleyna Korkmaz | AR Interface</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
     
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <style>
-        :root {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --accent-color: #7000ff; /* Neon Mor */
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow: hidden; /* Sayfa kaydırmayı kapat, App hissi ver */
-            height: 100vh;
-            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
         }
 
-        /* --- UI KATMANI (AR Üstünde Duran Arayüz) --- */
+        /* --- ARAYÜZ KATMANI (UI) --- */
         #ui-layer {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none; /* Tıklamalar arkadaki kameraya geçsin */
             z-index: 10;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            pointer-events: none; /* Tıklamalar arkadaki AR sahnesine geçebilsin */
-            background: radial-gradient(circle at center, transparent 0%, #000000 120%);
         }
 
-        /* --- HEADER --- */
-        header {
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: auto;
-        }
-
-        .brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-        .brand span { color: var(--accent-color); }
-
-        .version-tag {
-            font-size: 0.75rem;
-            background: var(--glass);
-            padding: 5px 12px;
-            border-radius: 20px;
-            border: var(--border);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* --- ORTA BÖLÜM (BİLGİ KARTI) --- */
-        .info-panel {
-            align-self: flex-start;
-            margin-left: 30px;
-            max-width: 350px;
-            pointer-events: auto;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 0 20px 20px 0;
-            border-left: 4px solid var(--accent-color);
-            transform: translateX(-100%);
-            animation: slideIn 1s forwards ease-out 0.5s;
-        }
-
-        @keyframes slideIn { to { transform: translateX(0); } }
-
-        h1 { font-size: 2.5rem; line-height: 1; margin-bottom: 10px; }
-        p { font-size: 0.9rem; color: #aaa; margin-bottom: 20px; line-height: 1.6; }
-        
-        .ai-note {
+        /* --- SAĞ ÜST KÖŞE: VERSİYON --- */
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid cyan;
+            color: cyan;
+            padding: 5px 15px;
+            font-family: 'Orbitron', sans-serif;
             font-size: 0.8rem;
-            color: var(--accent-color);
-            margin-top: 15px;
-            font-style: italic;
-        }
-
-        /* --- FOOTER KONTROLLERİ --- */
-        .controls {
-            padding: 30px;
-            text-align: center;
-            pointer-events: auto;
-        }
-
-        .scan-hint {
-            font-size: 0.8rem;
-            margin-bottom: 15px;
-            opacity: 0.7;
-            text-transform: uppercase;
             letter-spacing: 2px;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-
-        .btn-primary {
-            background: var(--text-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 15px 40px;
-            font-family: inherit;
-            font-weight: 700;
+        /* --- SOL ÜST KÖŞE: İSİM & UNVAN --- */
+        .profile-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+        .profile-info h1 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #fff, cyan);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .profile-info p {
+            margin: 5px 0 0 0;
             font-size: 1rem;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: transform 0.2s;
-            text-decoration: none;
-            display: inline-block;
+            color: #ccc;
+            border-left: 2px solid cyan;
+            padding-left: 10px;
         }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
 
-        /* Mobil Düzenleme */
-        @media (max-width: 768px) {
-            .info-panel {
-                width: 90%;
-                margin: 0 auto;
-                border-radius: 20px;
-                border-left: none;
-                border-top: 4px solid var(--accent-color);
-            }
-            h1 { font-size: 2rem; }
+        /* --- ALT KISIM: TARAMA ÇERÇEVESİ --- */
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        .scan-frame::before {
+            content: "TARANIYOR...";
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            text-align: center;
+            color: cyan;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            animation: blink 2s infinite;
+        }
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: cyan;
+            position: absolute;
+            top: 0;
+            animation: scan 3s infinite linear;
+            box-shadow: 0 0 10px cyan;
+        }
+
+        @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
+        @keyframes blink { 0%, 100% {opacity: 1;} 50% {opacity: 0.3;} }
+
+        /* --- ALT BİLGİ --- */
+        .footer-info {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
         }
 
     </style>
@@ -149,49 +122,60 @@
 <body>
 
     <div id="ui-layer">
-        
-        <header>
-            <div class="brand">ALEYNA<span>KORKMAZ</span></div>
-            <div class="version-tag">Sistem v1.0.0</div>
-        </header>
-
-        <div class="info-panel">
-            <h1>Matematik &<br>Gerçeklik</h1>
-            <p>
-                Veri sadece sayılardan ibaret değildir; işlenmeyi bekleyen bir formdur. İstanbul Üniversitesi Matematik öğrencisi olarak, algoritmaları sanatla, kodları gerçek dünyayla birleştiriyorum.
-            </p>
-            <div class="ai-note">
-                >_ AI TESPİTİ: "Aleyna, analitik zekayı yaratıcı teknolojiyle (AR/Blender) birleştirerek geleceğin hibrit veri analisti profilini çiziyor."
-            </div>
+        <div class="profile-info">
+            <h1>ALEYNA KORKMAZ</h1>
+            <p>DATA ANALYST // MATHEMATICIAN</p>
         </div>
 
-        <div class="controls">
-            <div class="scan-hint">[ .patt Dosyası Aranıyor... ]</div>
-            <a href="https://github.com/aleynakorkmazz" target="_blank" class="btn-primary">GITHUB PROFİLİM</a>
+        <div class="version-badge">SYS.VER 1.0.0</div>
+
+        <div class="scan-frame">
+            <div class="scan-line"></div>
+        </div>
+
+        <div class="footer-info">
+            [ AR MODÜLÜ AKTİF: QR DESENİNİ KAMERAYA GÖSTERİN ]
         </div>
     </div>
 
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;' vr-mode-ui="enabled: false">
+    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
         
-        <a-entity light="type: ambient; color: #BBB"></a-entity>
-        <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
-
         <a-marker type='pattern' url='qr/pattern-ar_projesi.patt'>
             
-            <a-sphere position="0 0.5 0" radius="0.3" color="#7000ff" material="opacity: 0.7; metalness: 0.8; roughness: 0.2"
-                animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true">
+            <a-icosahedron 
+                position="0 0.5 0" 
+                radius="0.5" 
+                color="#00ffff" 
+                material="wireframe: true; opacity: 0.8"
+                animation="property: rotation; to: 360 360 0; loop: true; dur: 5000; easing: linear">
+            </a-icosahedron>
+
+            <a-sphere 
+                position="0 0.5 0" 
+                radius="0.2" 
+                color="#ffffff" 
+                material="opacity: 0.9; emissive: #00ffff; emissiveIntensity: 0.5"
+                animation="property: scale; dir: alternate; to: 1.2 1.2 1.2; dur: 1000; loop: true">
             </a-sphere>
 
-            <a-ring position="0 0.5 0" radius-inner="0.6" radius-outer="0.62" color="#ffffff" rotation="-90 0 0"
-                animation="property: rotation; to: -90 360 0; dur: 5000; easing: linear; loop: true">
-            </a-ring>
-            
-            <a-ring position="0 0.5 0" radius-inner="0.8" radius-outer="0.81" color="#7000ff" rotation="-45 0 0"
-                animation="property: rotation; to: -45 -360 0; dur: 7000; easing: linear; loop: true">
-            </a-ring>
+            <a-torus 
+                position="0 0.5 0" 
+                radius="0.8" 
+                radius-tubular="0.02" 
+                rotation="90 0 0"
+                color="#ff0055"
+                material="opacity: 0.6"
+                animation="property: rotation; to: 90 360 0; loop: true; dur: 3000; easing: linear">
+            </a-torus>
 
-            <a-text value="VERI ANALIZI" position="0 1.5 0" align="center" color="#ffffff" scale="1.5 1.5 1.5"
-                animation="property: position; to: 0 1.7 0; dir: alternate; dur: 2000; loop: true"></a-text>
+            <a-text 
+                value="VERI ANALIZI" 
+                position="0 1.5 0" 
+                align="center" 
+                scale="1.5 1.5 1.5" 
+                color="#00ffff"
+                side="double">
+            </a-text>
 
         </a-marker>
         
@@ -200,3 +184,5 @@
 
 </body>
 </html>
+
+  
