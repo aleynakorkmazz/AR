@@ -3,27 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Aleyna Korkmaz | AR Test</title>
+    <title>Aleyna Korkmaz | AR Interface</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
+    
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    
+
     <style>
-        body { margin: 0; overflow: hidden; font-family: sans-serif; }
-        .ui {
-            position: fixed; top: 10px; left: 10px; color: yellow; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 0 #000; z-index: 10;
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
         }
+
+        /* --- ARAYÜZ KATMANI (UI) --- */
+        #ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Tıklamalar arkadaki kameraya geçsin */
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* --- SAĞ ÜST KÖŞE: VERSİYON --- */
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid cyan;
+            color: cyan;
+            padding: 5px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* --- SOL ÜST KÖŞE: İSİM & UNVAN --- */
+        .profile-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+        .profile-info h1 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #fff, cyan);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .profile-info p {
+            margin: 5px 0 0 0;
+            font-size: 1rem;
+            color: #ccc;
+            border-left: 2px solid cyan;
+            padding-left: 10px;
+        }
+
+        /* --- ALT KISIM: TARAMA ÇERÇEVESİ --- */
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        .scan-frame::before {
+            content: "TARANIYOR...";
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            text-align: center;
+            color: cyan;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            animation: blink 2s infinite;
+        }
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: cyan;
+            position: absolute;
+            top: 0;
+            animation: scan 3s infinite linear;
+            box-shadow: 0 0 10px cyan;
+        }
+
+        @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
+        @keyframes blink { 0%, 100% {opacity: 1;} 50% {opacity: 0.3;} }
+
+        /* --- ALT BİLGİ --- */
+        .footer-info {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="ui">TEST MODU: Hiro Marker Aranıyor...</div>
+    <div id="ui-layer">
+        <div class="profile-info">
+            <h1>ALEYNA KORKMAZ</h1>
+            <p>DATA ANALYST // MATHEMATICIAN</p>
+        </div>
 
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
+        <div class="version-badge">SYS.VER 1.0.0</div>
+
+        <div class="scan-frame">
+            <div class="scan-line"></div>
+        </div>
+
+        <div class="footer-info">
+            [ AR MODÜLÜ AKTİF: QR DESENİNİ KAMERAYA GÖSTERİN ]
+        </div>
+    </div>
+
+    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
         
-        <a-marker preset="hiro">
+        <a-marker type='pattern' url='qr/pattern-ar_projesi.patt'>
             
-            <a-box position="0 0.5 0" color="red" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
-            <a-text value="SISTEM CALISIYOR" position="0 1.5 0" align="center" color="yellow" scale="2 2 2"></a-text>
+            <a-icosahedron 
+                position="0 0.5 0" 
+                radius="0.5" 
+                color="#00ffff" 
+                material="wireframe: true; opacity: 0.8"
+                animation="property: rotation; to: 360 360 0; loop: true; dur: 5000; easing: linear">
+            </a-icosahedron>
+
+            <a-sphere 
+                position="0 0.5 0" 
+                radius="0.2" 
+                color="#ffffff" 
+                material="opacity: 0.9; emissive: #00ffff; emissiveIntensity: 0.5"
+                animation="property: scale; dir: alternate; to: 1.2 1.2 1.2; dur: 1000; loop: true">
+            </a-sphere>
+
+            <a-torus 
+                position="0 0.5 0" 
+                radius="0.8" 
+                radius-tubular="0.02" 
+                rotation="90 0 0"
+                color="#ff0055"
+                material="opacity: 0.6"
+                animation="property: rotation; to: 90 360 0; loop: true; dur: 3000; easing: linear">
+            </a-torus>
+
+            <a-text 
+                value="VERI ANALIZI" 
+                position="0 1.5 0" 
+                align="center" 
+                scale="1.5 1.5 1.5" 
+                color="#00ffff"
+                side="double">
+            </a-text>
 
         </a-marker>
         
